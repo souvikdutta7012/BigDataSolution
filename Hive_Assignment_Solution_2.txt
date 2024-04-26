@@ -1,0 +1,167 @@
+
+Scenario Based questions: 
+
+Q1. Will the reducer work or not if you use “Limit 1” in any HiveQL query?
+- It really depends on what your query is.If your query is a simple select query then no reducers are called.If your query has something like aggregation along with group by or order by then reducers will be called.
+
+Q2. Suppose I have installed Apache Hive on top of my Hadoop cluster using default metastore configuration. Then, what will happen if we have multiple clients trying to access Hive at the same time? 
+- The default metastore configuration allows only one Hive session to be opened at a time for accessing the metastore. Therefore, if multiple clients try to access the metastore at the same time, they will get an error. One has to use a standalone metastore, i.e. Local or remote metastore configuration in Apache Hive for allowing access to multiple clients concurrently. 
+
+Q3. Suppose, I create a table that contains details of all the transactions done by the customers of year 2016: CREATE TABLE transaction_details (cust_id INT, amount FLOAT, month STRING, country STRING) ROW FORMAT DELIMITED FIELDS TERMINATED BY ‘,’ ;
+Now, after inserting 50,000 tuples in this table, I want to know the total revenue generated for each month. But, Hive is taking too much time in processing this query. How will you solve this problem and list the steps that I will be taking in order to do so?
+- We can solve this problem of query latency by partitioning the table according to each month. So, for each month we will be scanning only the partitioned data instead of whole data sets.
+steps:
+1) Create a partitioned table as
+   CREATE TABLE partitioned_transaction (cust_id INT, amount FLOAT, country STRING) PARTITIONED BY (month STRING) ROW FORMAT DELIMITED FIELDS TERMINATED BY ‘,’ ; 
+2) SET hive.exec.dynamic.partition.mode = nonstrict;
+3) INSERT OVERWRITE TABLE partitioned_transaction PARTITION (month) SELECT cust_id, amount, country, month FROM transaction_details;
+Now, we can perform the query using each partition and therefore, decrease the query time. 
+
+Q4. How can you add a new partition for the month December in the above partitioned table?
+- ALTER TABLE partitioned_transaction ADD PARTITION (month=’Dec’) LOCATION  ‘/partitioned_transaction’;
+
+Q5. I am inserting data into a table based on partitions dynamically. But, I received an error – FAILED ERROR IN SEMANTIC ANALYSIS: Dynamic partition strict mode requires at least one static partition column. How will you remove this error?
+- SET hive.exec.dynamic.partition.mode = nonstrict;
+
+Q6. How will you consume this CSV file into the Hive warehouse using built-in SerDe?
+- CREATE EXTERNAL TABLE sample
+(id int, first_name string, 
+last_name string, email string,
+gender string, ip_address string) 
+ROW FORMAT SERDE ‘org.apache.hadoop.hive.serde2.OpenCSVSerde’ 
+STORED AS TEXTFILE LOCATION ‘/temp’;
+
+Q7. how will you solve this problem where we want to create a single Hive table for lots of small files without degrading the performance of the system?
+- One can use the SequenceFile format which will group these small files together to form a single sequence file. The steps that will be followed in doing so are as follows:
+1) Create a temporary table:
+CREATE TABLE temp_table (id INT, name STRING, e-mail STRING, country STRING)
+ROW FORMAT FIELDS DELIMITED TERMINATED BY ‘,’ STORED AS TEXTFILE;
+
+2) Load the data into temp_table:
+LOAD DATA INPATH ‘/input’ INTO TABLE temp_table;
+
+3) Create a table that will store data in SequenceFile format:
+CREATE TABLE sample_seqfile (id INT, name STRING, e-mail STRING, country STRING)
+ROW FORMAT FIELDS DELIMITED TERMINATED BY ‘,’ STORED AS SEQUENCEFILE;
+
+4) Transfer the data from the temporary table into the sample_seqfile table:
+INSERT OVERWRITE TABLE sample SELECT * FROM temp_table;
+Hence, a single SequenceFile is generated which contains the data present in all of the input files and therefore, the problem of having lots of small files is finally eliminated.
+
+
+Q8. Is it possible to add 100 nodes when we already have 100 nodes in Hive? If yes, how?
+- Yes
+
+Q9.LOAD DATA LOCAL INPATH ‘Home/country/state/’
+OVERWRITE INTO TABLE address;
+The following statement failed to execute. What can be the cause?
+- directory name should start with /home/..
+
+
+
+
+Hive Practical questions:
+
+Hive Join operations
+
+Create a  table named CUSTOMERS(ID | NAME | AGE | ADDRESS   | SALARY)
+Create a Second  table ORDER(OID | DATE | CUSTOMER_ID | AMOUNT
+)
+Answer:
+create table CUSTOMERS(ID INT,NAME STRING,AGE INT,ADDRESS STRING,SALARY INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';
+Create table ORDER('OID' INT,'DATE' STRING',CUSTOMER_ID' INT,'AMOUNT' INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';
+Now perform different joins operations on top of these tables
+(Inner JOIN, LEFT OUTER JOIN ,RIGHT OUTER JOIN ,FULL OUTER JOIN)
+Answer: Select * from Customers c inner join Order o 
+on c.id = o.customer_id
+Select * from Customers c left outer join Order o 
+on c.id = o.customer_id
+Select * from Customers c right outer join Order o 
+on c.id = o.customer_id
+Select * from Customers c full outer join Order o 
+on c.id = o.customer_id
+
+Select * from Customers c left join Order o 
+on c.id = o.customer_id
+
+
+BUILD A DATA PIPELINE WITH HIVE
+
+Download a data from the given location - 
+https://archive.ics.uci.edu/ml/machine-learning-databases/00360/
+
+1. Create a hive table as per given schema in your dataset 
+
+Create table AirQuality(
+Date String,
+Time String,
+CO(GT) decimal(2,2),
+PT08.S1(CO)  INT,
+NMHC(GT) INT,
+C6H6(GT) decimal(2,2),
+PT08.S2(NMHC) INT,
+NOx(GT) INT,
+PT08.S3(NOx) INT,
+NO2(GT) INT,
+PT08.S4(NO2) INT,
+PT08.S5(O3) INT,
+T  decimal(2,2),
+RH  decimal(2,2),
+AH  decimal(2,2)
+)  row format serde ‘org.apache.hadoop.hive.serde2.OpenCSVSerde’ 
+
+2. try to place a data into table location
+LOAD DATA LOCAL INPATH 'file:///config/workspace/AirQualityUCI.csv' into table AirQuality;
+3. Perform a select operation .
+set hive.cli.print.headers = true;
+select * from AirQuality;
+4. Fetch the result of the select operation in your local as a csv file . 
+Insert overwrite local directory '/workspace/AirQuality.csv' select * from AirQuality;
+5. Perform group by operation . 
+Select CO(GT) ,Date from AirQuality group by Date;
+7. Perform filter operation at least 5 kinds of filter examples . 
+8. show and example of regex operation
+select regex_extract(Date,'11(.*)',8)
+9. alter table operation 
+Alter tabel AirQuality RENAME to AirQualityUCI
+10 . drop table operation
+Drop table AirQuality
+12 . order by operation . 
+select * from AirQuality order by Date;
+13 . where clause operations you have to perform . 
+select * from AirQuality where CO(GT) < 2;
+14 . sorting operation you have to perform . 
+select * from AirQuality order by Date;
+15 . distinct operation you have to perform . 
+select distinct(Date) from AirQuality;
+16 . like an operation you have to perform .
+select * from AirQuality where Date like '11-03-2004';
+17 . union operation you have to perform . 
+select distinct(Date) from AirQuality
+union
+select distinct(time) from AirQuality
+18 . table view operation you have to perform . 
+create view AirQualityview as
+select * from AirQuality;
+
+hive operation with python
+
+Create a python application that connects to the Hive database for extracting data, creating sub tables for data processing, drops temporary tables.fetch rows to python itself into a list of tuples and mimic the join or filter operations
+import petl as etl
+import pandas as pd
+import cdata.apachehive as mod
+
+cnxn = mod.connect("Server=127.0.0.1;Port=10000;TransportMode=BINARY;")
+
+sql = "SELECT City, CompanyName FROM Customers WHERE Country = 'US'"
+
+table1 = etl.fromdb(cnxn,sql)
+
+table2 = etl.sort(table1,'CompanyName')
+
+etl.tocsv(table2,'customers_data.csv')
+
+table3 = [ ['City','CompanyName'], ['NewCity1','NewCompanyName1'], ['NewCity2','NewCompanyName2'], ['NewCity3','NewCompanyName3'] ]
+
+etl.appenddb(table3, cnxn, 'Customers')
+

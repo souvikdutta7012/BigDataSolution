@@ -1,0 +1,331 @@
+a. Read the data, show it and Count the number of records.
+>>> dfCase = spark.read.option("header",True).option("inferSchema",True).csv("/user/input/Case.csv")
+>>> dfRegion = spark.read.option("header",True).option("inferSchema",True).csv("/user/input/Region.csv")
+>>> dfTimeProvince = spark.read.option("header",True).option("inferSchema",True).csv("/user/input/TimeProvince.csv")
+
+>>> dfCase.show()
++--------+--------+---------------+-----+--------------------+---------+---------+----------+
+| case_id|province|           city|group|      infection_case|confirmed| latitude| longitude|
++--------+--------+---------------+-----+--------------------+---------+---------+----------+
+| 1000001|   Seoul|     Yongsan-gu| true|       Itaewon Clubs|      139|37.538621|126.992652|
+| 1000002|   Seoul|      Gwanak-gu| true|             Richway|      119| 37.48208|126.901384|
+| 1000003|   Seoul|        Guro-gu| true| Guro-gu Call Center|       95|37.508163|126.884387|
+| 1000004|   Seoul|   Yangcheon-gu| true|Yangcheon Table T...|       43|37.546061|126.874209|
+| 1000005|   Seoul|      Dobong-gu| true|     Day Care Center|       43|37.679422|127.044374|
+| 1000006|   Seoul|        Guro-gu| true|Manmin Central Ch...|       41|37.481059|126.894343|
+| 1000007|   Seoul|from other city| true|SMR Newly Planted...|       36|        -|         -|
+| 1000008|   Seoul|  Dongdaemun-gu| true|       Dongan Church|       17|37.592888|127.056766|
+| 1000009|   Seoul|from other city| true|Coupang Logistics...|       25|        -|         -|
+| 1000010|   Seoul|      Gwanak-gu| true|     Wangsung Church|       30|37.481735|126.930121|
+| 1000011|   Seoul|   Eunpyeong-gu| true|Eunpyeong St. Mar...|       14| 37.63369|  126.9165|
+| 1000012|   Seoul|   Seongdong-gu| true|    Seongdong-gu APT|       13| 37.55713|  127.0403|
+| 1000013|   Seoul|      Jongno-gu| true|Jongno Community ...|       10| 37.57681|   127.006|
+| 1000014|   Seoul|     Gangnam-gu| true|Samsung Medical C...|        7| 37.48825| 127.08559|
+| 1000015|   Seoul|        Jung-gu| true|Jung-gu Fashion C...|        7|37.562405|126.984377|
+| 1000016|   Seoul|   Seodaemun-gu| true|  Yeonana News Class|        5|37.558147|126.943799|
+| 1000017|   Seoul|      Jongno-gu| true|Korea Campus Crus...|        7|37.594782|126.968022|
+| 1000018|   Seoul|     Gangnam-gu| true|Gangnam Yeoksam-d...|        6|        -|         -|
+| 1000019|   Seoul|from other city| true|Daejeon door-to-d...|        1|        -|         -|
+| 1000020|   Seoul|   Geumcheon-gu| true|Geumcheon-gu rice...|        6|        -|         -|
++--------+--------+---------------+-----+--------------------+---------+---------+----------+
+only showing top 20 rows
+
+>>> dfRegion.show()
++-----+--------+-------------+---------+----------+-----------------------+------------------+----------------+-------------+------------------------+-------------------+------------------+
+| code|province|         city| latitude| longitude|elementary_school_count|kindergarten_count|university_count|academy_ratio|elderly_population_ratio|elderly_alone_ratio|nursing_home_count|
++-----+--------+-------------+---------+----------+-----------------------+------------------+----------------+-------------+------------------------+-------------------+------------------+
+|10000|   Seoul|        Seoul|37.566953|126.977977|                    607|               830|              48|         1.44|                   15.38|                5.8|             22739|
+|10010|   Seoul|   Gangnam-gu|37.518421|127.047222|                     33|                38|               0|         4.18|                   13.17|                4.3|              3088|
+|10020|   Seoul|  Gangdong-gu|37.530492|127.123837|                     27|                32|               0|         1.54|                   14.55|                5.4|              1023|
+|10030|   Seoul|   Gangbuk-gu|37.639938|127.025508|                     14|                21|               0|         0.67|                   19.49|                8.5|               628|
+|10040|   Seoul|   Gangseo-gu|37.551166|126.849506|                     36|                56|               1|         1.17|                   14.39|                5.7|              1080|
+|10050|   Seoul|    Gwanak-gu| 37.47829|126.951502|                     22|                33|               1|         0.89|                   15.12|                4.9|               909|
+|10060|   Seoul|  Gwangjin-gu|37.538712|127.082366|                     22|                33|               3|         1.16|                   13.75|                4.8|               723|
+|10070|   Seoul|      Guro-gu|37.495632| 126.88765|                     26|                34|               3|          1.0|                   16.21|                5.7|               741|
+|10080|   Seoul| Geumcheon-gu|37.456852|126.895229|                     18|                19|               0|         0.96|                   16.15|                6.7|               475|
+|10090|   Seoul|     Nowon-gu|37.654259|127.056294|                     42|                66|               6|         1.39|                    15.4|                7.4|               952|
+|10100|   Seoul|    Dobong-gu|37.668952|127.047082|                     23|                26|               1|         0.95|                   17.89|                7.2|               485|
+|10110|   Seoul|Dongdaemun-gu|37.574552|127.039721|                     21|                31|               4|         1.06|                   17.26|                6.7|               832|
+|10120|   Seoul|   Dongjak-gu|37.510571|126.963604|                     21|                34|               3|         1.17|                   15.85|                5.2|               762|
+|10130|   Seoul|      Mapo-gu|37.566283|126.901644|                     22|                24|               2|         1.83|                   14.05|                4.9|               929|
+|10140|   Seoul| Seodaemun-gu|37.579428|126.936771|                     19|                25|               6|         1.12|                   16.77|                6.2|               587|
+|10150|   Seoul|    Seocho-gu|37.483804|127.032693|                     24|                27|               1|          2.6|                   13.39|                3.8|              1465|
+|10160|   Seoul| Seongdong-gu|37.563277|127.036647|                     21|                30|               2|         0.97|                   14.76|                5.3|               593|
+|10170|   Seoul|  Seongbuk-gu|37.589562|  127.0167|                     29|                49|               6|         1.02|                   16.15|                6.0|               729|
+|10180|   Seoul|    Songpa-gu| 37.51462|127.106141|                     40|                51|               1|         1.65|                    13.1|                4.1|              1527|
+|10190|   Seoul| Yangcheon-gu|37.517189|126.866618|                     30|                43|               0|         2.26|                   13.55|                5.5|               816|
++-----+--------+-------------+---------+----------+-----------------------+------------------+----------------+-------------+------------------------+-------------------+------------------+
+only showing top 20 rows
+
+>>> dfTimeProvince.show()
++----------+----+-----------------+---------+--------+--------+
+|      date|time|         province|confirmed|released|deceased|
++----------+----+-----------------+---------+--------+--------+
+|2020-01-20|  16|            Seoul|        0|       0|       0|
+|2020-01-20|  16|            Busan|        0|       0|       0|
+|2020-01-20|  16|            Daegu|        0|       0|       0|
+|2020-01-20|  16|          Incheon|        1|       0|       0|
+|2020-01-20|  16|          Gwangju|        0|       0|       0|
+|2020-01-20|  16|          Daejeon|        0|       0|       0|
+|2020-01-20|  16|            Ulsan|        0|       0|       0|
+|2020-01-20|  16|           Sejong|        0|       0|       0|
+|2020-01-20|  16|      Gyeonggi-do|        0|       0|       0|
+|2020-01-20|  16|       Gangwon-do|        0|       0|       0|
+|2020-01-20|  16|Chungcheongbuk-do|        0|       0|       0|
+|2020-01-20|  16|Chungcheongnam-do|        0|       0|       0|
+|2020-01-20|  16|     Jeollabuk-do|        0|       0|       0|
+|2020-01-20|  16|     Jeollanam-do|        0|       0|       0|
+|2020-01-20|  16| Gyeongsangbuk-do|        0|       0|       0|
+|2020-01-20|  16| Gyeongsangnam-do|        0|       0|       0|
+|2020-01-20|  16|          Jeju-do|        0|       0|       0|
+|2020-01-21|  16|            Seoul|        0|       0|       0|
+|2020-01-21|  16|            Busan|        0|       0|       0|
+|2020-01-21|  16|            Daegu|        0|       0|       0|
++----------+----+-----------------+---------+--------+--------+
+only showing top 20 rows
+
+>>> dfCase.count()
+174
+>>> dfRegion.count()
+244
+>>> dfTimeProvince.count()
+2771
+
+
+b. Describe the data with a describe function.
+>>> dfCase.describe()
+DataFrame[summary: string,  case_id: string, province: string, city: string, infection_case: string, confirmed: string, latitude: string, longitude: string]
+>>> dfRegion.describe()
+DataFrame[summary: string, code: string, province: string, city: string, latitude: string, longitude: string, elementary_school_count: string, kindergarten_count: string, university_count: string, academy_ratio: string, elderly_population_ratio: string, elderly_alone_ratio: string, nursing_home_count: string]
+>>> dfTimeProvince.describe()
+DataFrame[summary: string, date: string, time: string, province: string, confirmed: string, released: string, deceased: string]
+
+
+c. If there is any duplicate value drop it.
+>>> dfCase.dropDuplicates().show()
+>>> dfRegion.dropDuplicates().show()
+>>> dfTimeProvince.dropDuplicates().show()
+
+
+d. Use limit function for showcasing a limited number of records.
+>>> dfCase.limit(10).show()
+>>> dfRegion.limit(10).show()
+>>> dfTimeProvince.limit(10).show()
+
+
+e. If you find the column name is not suitable, change the column name.[optional]
+>>> dfCase.withColumnRenamed("case_id","CASES").show()
+
+
+f. Select the subset of the columns.
+>>> dfTimeProvince.select("province","confirmed").show()
++-----------------+---------+
+|         province|confirmed|
++-----------------+---------+
+|            Seoul|        0|
+|            Busan|        0|
+|            Daegu|        0|
+|          Incheon|        1|
+|          Gwangju|        0|
+|          Daejeon|        0|
+|            Ulsan|        0|
+|           Sejong|        0|
+|      Gyeonggi-do|        0|
+|       Gangwon-do|        0|
+|Chungcheongbuk-do|        0|
+|Chungcheongnam-do|        0|
+|     Jeollabuk-do|        0|
+|     Jeollanam-do|        0|
+| Gyeongsangbuk-do|        0|
+| Gyeongsangnam-do|        0|
+|          Jeju-do|        0|
+|            Seoul|        0|
+|            Busan|        0|
+|            Daegu|        0|
++-----------------+---------+
+
+g. If there is any null value, fill it with any random value or drop it.
+>>> DF = dfCase.filter(col("latitude")!='-')
+>>> DF.show()
+
+h. Filter the data based on different columns or variables and do the best analysis.
+>>> dfCase.filter(col("confirmed")<10).show()
++--------+--------+---------------+-----+--------------------+---------+---------+----------+
+| case_id|province|           city|group|      infection_case|confirmed| latitude| longitude|
++--------+--------+---------------+-----+--------------------+---------+---------+----------+
+| 1000014|   Seoul|     Gangnam-gu| true|Samsung Medical C...|        7| 37.48825| 127.08559|
+| 1000015|   Seoul|        Jung-gu| true|Jung-gu Fashion C...|        7|37.562405|126.984377|
+| 1000016|   Seoul|   Seodaemun-gu| true|  Yeonana News Class|        5|37.558147|126.943799|
+| 1000017|   Seoul|      Jongno-gu| true|Korea Campus Crus...|        7|37.594782|126.968022|
+| 1000018|   Seoul|     Gangnam-gu| true|Gangnam Yeoksam-d...|        6|        -|         -|
+| 1000019|   Seoul|from other city| true|Daejeon door-to-d...|        1|        -|         -|
+| 1000020|   Seoul|   Geumcheon-gu| true|Geumcheon-gu rice...|        6|        -|         -|
+| 1000021|   Seoul|from other city| true|  Shincheonji Church|        8|        -|         -|
+| 1000022|   Seoul|from other city| true|Guri Collective I...|        5|        -|         -|
+| 1000024|   Seoul|Yeongdeungpo-gu| true|Yeongdeungpo Lear...|        3|37.520846|126.931278|
+| 1000025|   Seoul|     Gangnam-gu| true|Gangnam Dongin Ch...|        1|37.522331|127.057388|
+| 1000026|   Seoul|   Yangcheon-gu| true|Biblical Language...|        3|37.524623|126.843118|
+| 1000027|   Seoul|      Seocho-gu| true|       Seocho Family|        5|        -|         -|
+| 1000028|   Seoul|from other city| true|Anyang Gunpo Past...|        1|        -|         -|
+| 1000029|   Seoul|     Gangnam-gu| true|Samsung Fire & Ma...|        4|37.498279|127.030139|
+| 1000030|   Seoul|     Gangseo-gu| true|SJ Investment Cal...|        0|37.559649|126.835102|
+| 1000031|   Seoul|from other city| true|     Yongin Brothers|        4|        -|         -|
+| 1000032|   Seoul|        Jung-gu| true|Seoul City Hall S...|        3|37.565699|126.977079|
+| 1000033|   Seoul|from other city| true|Uiwang Logistics ...|        2|        -|         -|
+| 1000034|   Seoul|              -| true|         Orange Life|        1|        -|         -|
++--------+--------+---------------+-----+--------------------+---------+---------+----------+
+
+
+i. Sort the number of confirmed cases. Confirmed column is there in the dataset. Check with descending sort also.
+>>> dfCase.select("*").orderBy("confirmed").show()
++--------+-----------------+---------------+-----+--------------------+---------+---------+----------+
+| case_id|         province|           city|group|      infection_case|confirmed| latitude| longitude|
++--------+-----------------+---------------+-----+--------------------+---------+---------+----------+
+| 7000002|          Jeju-do|              -|false|contact with patient|        0|        -|         -|
+| 3000007|       Gangwon-do|              -|false|contact with patient|        0|        -|         -|
+| 1000030|            Seoul|     Gangseo-gu| true|SJ Investment Cal...|        0|37.559649|126.835102|
+| 1100007|            Busan|from other city| true|Cheongdo Daenam H...|        1|        -|         -|
+| 5000003|     Jeollabuk-do|from other city| true|  Shincheonji Church|        1|        -|         -|
+| 1000028|            Seoul|from other city| true|Anyang Gunpo Past...|        1|        -|         -|
+| 1000025|            Seoul|     Gangnam-gu| true|Gangnam Dongin Ch...|        1|37.522331|127.057388|
+| 1700003|           Sejong|from other city| true|  Shincheonji Church|        1|        -|         -|
+| 5100002|     Jeollanam-do|from other city| true|  Shincheonji Church|        1|        -|         -|
+| 7000004|          Jeju-do|from other city| true|       Itaewon Clubs|        1|        -|         -|
+| 1000019|            Seoul|from other city| true|Daejeon door-to-d...|        1|        -|         -|
+| 1000034|            Seoul|              -| true|         Orange Life|        1|        -|         -|
+| 1700006|           Sejong|              -|false|                 etc|        1|        -|         -|
+| 1300005|          Gwangju|              -|false|                 etc|        1|        -|         -|
+| 1200006|            Daegu|from other city| true|       Itaewon Clubs|        2|        -|         -|
+| 1200007|            Daegu|from other city| true|Cheongdo Daenam H...|        2|        -|         -|
+| 1400004|          Incheon|from other city| true|  Shincheonji Church|        2|        -|         -|
+| 1000033|            Seoul|from other city| true|Uiwang Logistics ...|        2|        -|         -|
+| 1500006|          Daejeon|from other city| true|  Shincheonji Church|        2|        -|         -|
+| 4000003|Chungcheongbuk-do|from other city| true| Guro-gu Call Center|        2|        -|         -|
++--------+-----------------+---------------+-----+--------------------+---------+---------+----------+
+only showing top 20 rows
+
+>>> dfCase.select("*").orderBy(col("confirmed").desc()).show()
++--------+-----------------+---------------+-----+--------------------+---------+---------+----------+
+| case_id|         province|           city|group|      infection_case|confirmed| latitude| longitude|
++--------+-----------------+---------------+-----+--------------------+---------+---------+----------+
+| 1200001|            Daegu|         Nam-gu| true|  Shincheonji Church|     4511| 35.84008|  128.5667|
+| 1200009|            Daegu|              -|false|contact with patient|      917|        -|         -|
+| 1200010|            Daegu|              -|false|                 etc|      747|        -|         -|
+| 6000001| Gyeongsangbuk-do|from other city| true|  Shincheonji Church|      566|        -|         -|
+| 2000020|      Gyeonggi-do|              -|false|     overseas inflow|      305|        -|         -|
+| 1000036|            Seoul|              -|false|     overseas inflow|      298|        -|         -|
+| 1200002|            Daegu|   Dalseong-gun| true|Second Mi-Ju Hosp...|      196|35.857375|128.466651|
+| 6000012| Gyeongsangbuk-do|              -|false|contact with patient|      190|        -|         -|
+| 1000037|            Seoul|              -|false|contact with patient|      162|        -|         -|
+| 1000001|            Seoul|     Yongsan-gu| true|       Itaewon Clubs|      139|37.538621|126.992652|
+| 6000013| Gyeongsangbuk-do|              -|false|                 etc|      133|        -|         -|
+| 1200003|            Daegu|         Seo-gu| true|Hansarang Convale...|      124|35.885592|128.556649|
+| 1000002|            Seoul|      Gwanak-gu| true|             Richway|      119| 37.48208|126.901384|
+| 6000002| Gyeongsangbuk-do|   Cheongdo-gun| true|Cheongdo Daenam H...|      119| 35.64887|  128.7368|
+| 4100001|Chungcheongnam-do|     Cheonan-si| true|gym facility in C...|      103| 36.81503|  127.1139|
+| 1200004|            Daegu|   Dalseong-gun| true|Daesil Convalesce...|      101|35.857393|128.466653|
+| 1000038|            Seoul|              -|false|                 etc|      100|        -|         -|
+| 1000003|            Seoul|        Guro-gu| true| Guro-gu Call Center|       95|37.508163|126.884387|
+| 2000022|      Gyeonggi-do|              -|false|                 etc|       84|        -|         -|
+| 1400005|          Incheon|              -|false|     overseas inflow|       68|        -|         -|
++--------+-----------------+---------------+-----+--------------------+---------+---------+----------+
+only showing top 20 rows
+
+
+k. Use group by on top of province and city column and agg it with sum of confirmed cases
+>>> dfCase.groupBy(["province","city"]).agg(sum("confirmed")).show()
++----------------+---------------+--------------+
+|        province|           city|sum(confirmed)|
++----------------+---------------+--------------+
+|Gyeongsangnam-do|       Jinju-si|             9|
+|           Seoul|        Guro-gu|           139|
+|           Seoul|     Gangnam-gu|            18|
+|         Daejeon|              -|           100|
+|    Jeollabuk-do|from other city|             6|
+|Gyeongsangnam-do|Changnyeong-gun|             7|
+|           Seoul|              -|           561|
+|         Jeju-do|from other city|             1|
+|Gyeongsangbuk-do|              -|           345|
+|Gyeongsangnam-do|   Geochang-gun|            18|
+|Gyeongsangbuk-do|        Gumi-si|            10|
+|         Incheon|from other city|           117|
+|           Busan|              -|            85|
+|           Daegu|         Seo-gu|           124|
+|           Busan|     Suyeong-gu|             5|
+|     Gyeonggi-do|   Uijeongbu-si|            50|
+|           Seoul|     Yongsan-gu|           139|
+|           Daegu|              -|          1705|
+|           Seoul|   Seodaemun-gu|             5|
+|     Gyeonggi-do|    Seongnam-si|            94|
++----------------+---------------+--------------+
+only showing top 20 rows
+
+
+l. For joins we will need one more file.you can use region file. Use different join methods.
+>>> dfCase.join(dfRegion, ['province','city'],how='left').show()
++--------+---------------+--------+-----+--------------------+---------+---------+----------+-----+---------+----------+-----------------------+------------------+----------------+-------------+------------------------+-------------------+------------------+
+|province|           city| case_id|group|      infection_case|confirmed| latitude| longitude| code| latitude| longitude|elementary_school_count|kindergarten_count|university_count|academy_ratio|elderly_population_ratio|elderly_alone_ratio|nursing_home_count|
++--------+---------------+--------+-----+--------------------+---------+---------+----------+-----+---------+----------+-----------------------+------------------+----------------+-------------+------------------------+-------------------+------------------+
+|   Seoul|     Yongsan-gu| 1000001| true|       Itaewon Clubs|      139|37.538621|126.992652|10210|37.532768|126.990021|                     15|                13|               1|         0.68|                   16.87|                6.5|               435|
+|   Seoul|      Gwanak-gu| 1000002| true|             Richway|      119| 37.48208|126.901384|10050| 37.47829|126.951502|                     22|                33|               1|         0.89|                   15.12|                4.9|               909|
+|   Seoul|        Guro-gu| 1000003| true| Guro-gu Call Center|       95|37.508163|126.884387|10070|37.495632| 126.88765|                     26|                34|               3|          1.0|                   16.21|                5.7|               741|
+|   Seoul|   Yangcheon-gu| 1000004| true|Yangcheon Table T...|       43|37.546061|126.874209|10190|37.517189|126.866618|                     30|                43|               0|         2.26|                   13.55|                5.5|               816|
+|   Seoul|      Dobong-gu| 1000005| true|     Day Care Center|       43|37.679422|127.044374|10100|37.668952|127.047082|                     23|                26|               1|         0.95|                   17.89|                7.2|               485|
+|   Seoul|        Guro-gu| 1000006| true|Manmin Central Ch...|       41|37.481059|126.894343|10070|37.495632| 126.88765|                     26|                34|               3|          1.0|                   16.21|                5.7|               741|
+|   Seoul|from other city| 1000007| true|SMR Newly Planted...|       36|        -|         -| null|     null|      null|                   null|              null|            null|         null|                    null|               null|              null|
+|   Seoul|  Dongdaemun-gu| 1000008| true|       Dongan Church|       17|37.592888|127.056766|10110|37.574552|127.039721|                     21|                31|               4|         1.06|                   17.26|                6.7|               832|
+|   Seoul|from other city| 1000009| true|Coupang Logistics...|       25|        -|         -| null|     null|      null|                   null|              null|            null|         null|                    null|               null|              null|
+|   Seoul|      Gwanak-gu| 1000010| true|     Wangsung Church|       30|37.481735|126.930121|10050| 37.47829|126.951502|                     22|                33|               1|         0.89|                   15.12|                4.9|               909|
+|   Seoul|   Eunpyeong-gu| 1000011| true|Eunpyeong St. Mar...|       14| 37.63369|  126.9165|10220|37.603481|126.929173|                     31|                44|               1|         1.09|                    17.0|                6.5|               874|
+|   Seoul|   Seongdong-gu| 1000012| true|    Seongdong-gu APT|       13| 37.55713|  127.0403|10160|37.563277|127.036647|                     21|                30|               2|         0.97|                   14.76|                5.3|               593|
+|   Seoul|      Jongno-gu| 1000013| true|Jongno Community ...|       10| 37.57681|   127.006|10230|37.572999|126.979189|                     13|                17|               3|         1.71|                   18.27|                6.8|               668|
+|   Seoul|     Gangnam-gu| 1000014| true|Samsung Medical C...|        7| 37.48825| 127.08559|10010|37.518421|127.047222|                     33|                38|               0|         4.18|                   13.17|                4.3|              3088|
+|   Seoul|        Jung-gu| 1000015| true|Jung-gu Fashion C...|        7|37.562405|126.984377|10240|37.563988| 126.99753|                     12|                14|               2|         0.94|                   18.42|                7.4|               728|
+|   Seoul|   Seodaemun-gu| 1000016| true|  Yeonana News Class|        5|37.558147|126.943799|10140|37.579428|126.936771|                     19|                25|               6|         1.12|                   16.77|                6.2|               587|
+|   Seoul|      Jongno-gu| 1000017| true|Korea Campus Crus...|        7|37.594782|126.968022|10230|37.572999|126.979189|                     13|                17|               3|         1.71|                   18.27|                6.8|               668|
+|   Seoul|     Gangnam-gu| 1000018| true|Gangnam Yeoksam-d...|        6|        -|         -|10010|37.518421|127.047222|                     33|                38|               0|         4.18|                   13.17|                4.3|              3088|
+|   Seoul|from other city| 1000019| true|Daejeon door-to-d...|        1|        -|         -| null|     null|      null|                   null|              null|            null|         null|                    null|               null|              null|
+|   Seoul|   Geumcheon-gu| 1000020| true|Geumcheon-gu rice...|        6|        -|         -|10080|37.456852|126.895229|                     18|                19|               0|         0.96|                   16.15|                6.7|               475|
++--------+---------------+--------+-----+--------------------+---------+---------+----------+-----+---------+----------+-----------------------+------------------+----------------+-------------+------------------------+-------------------+------------------+
+only showing top 20 rows
+
+
+
+5. If you want, you can also use SQL with data frames. Let us try to run some SQL on the cases table.
+>>> dfCase.createOrReplaceTempView("TBL_Cases")
+>>> df = spark.sql("select * from TBL_Cases where city='Guro-gu'").show()
++--------+--------+-------+-----+--------------------+---------+---------+----------+
+| case_id|province|   city|group|      infection_case|confirmed| latitude| longitude|
++--------+--------+-------+-----+--------------------+---------+---------+----------+
+| 1000003|   Seoul|Guro-gu| true| Guro-gu Call Center|       95|37.508163|126.884387|
+| 1000006|   Seoul|Guro-gu| true|Manmin Central Ch...|       41|37.481059|126.894343|
+| 1000035|   Seoul|Guro-gu| true|     Daezayeon Korea|        3|37.486837|126.893163|
++--------+--------+-------+-----+--------------------+---------+---------+----------+
+
+6. Create Spark UDFs
+>>> dfCase.select(col("province"),col("city"),col("confirmed"),Casehighlow(col("confirmed"))).show()
++--------+---------------+---------+----------------------+
+|province|           city|confirmed|Casehighlow(confirmed)|
++--------+---------------+---------+----------------------+
+|   Seoul|     Yongsan-gu|      139|                  HIGH|
+|   Seoul|      Gwanak-gu|      119|                  HIGH|
+|   Seoul|        Guro-gu|       95|                  HIGH|
+|   Seoul|   Yangcheon-gu|       43|                   LOW|
+|   Seoul|      Dobong-gu|       43|                   LOW|
+|   Seoul|        Guro-gu|       41|                   LOW|
+|   Seoul|from other city|       36|                   LOW|
+|   Seoul|  Dongdaemun-gu|       17|                   LOW|
+|   Seoul|from other city|       25|                   LOW|
+|   Seoul|      Gwanak-gu|       30|                   LOW|
+|   Seoul|   Eunpyeong-gu|       14|                   LOW|
+|   Seoul|   Seongdong-gu|       13|                   LOW|
+|   Seoul|      Jongno-gu|       10|                   LOW|
+|   Seoul|     Gangnam-gu|        7|                   LOW|
+|   Seoul|        Jung-gu|        7|                   LOW|
+|   Seoul|   Seodaemun-gu|        5|                   LOW|
+|   Seoul|      Jongno-gu|        7|                   LOW|
+|   Seoul|     Gangnam-gu|        6|                   LOW|
+|   Seoul|from other city|        1|                   LOW|
+|   Seoul|   Geumcheon-gu|        6|                   LOW|
++--------+---------------+---------+----------------------+
+only showing top 20 rows
